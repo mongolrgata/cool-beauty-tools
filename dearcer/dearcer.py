@@ -31,18 +31,17 @@ def extract(arc_file_name):
             while True:
                 char = read_char16(arc_file)
 
-                if ord(char) == 0:
+                if char == '\x00':
                     break
 
                 file_names[i] += char
 
-        directory = script_directory + '\\' + os.path.splitext(os.path.basename(arc_file_name))[0]
-
+        directory = os.path.join(script_directory, os.path.splitext(os.path.basename(arc_file_name))[0])
         if not os.path.exists(directory):
             os.mkdir(directory)
 
         for i in range(0, file_count):
-            with open(directory + '\\' + file_names[i], 'wb+') as file_out:
+            with open(os.path.join(directory, file_names[i]), 'wb+') as file_out:
                 file_out.write(arc_file.read(file_lengths[i]))
 
 
