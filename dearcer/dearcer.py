@@ -14,6 +14,20 @@ def read_char16(file):
     return chr(file.read(2)[0])
 
 
+def read_filename(file):
+    result = ''
+
+    while True:
+        char = read_char16(file)
+
+        if char == '\x00':
+            break
+
+        result += char
+
+    return result
+
+
 def extract(arc_file_name):
     with open(arc_file_name, 'rb') as arc_file:
         file_count = read_unsigned_int32(arc_file)
@@ -25,16 +39,7 @@ def extract(arc_file_name):
         for i in range(0, file_count):
             file_lengths.append(read_unsigned_int32(arc_file))
             read_unsigned_int32(arc_file)  # file offset
-
-            file_names.append('')
-
-            while True:
-                char = read_char16(arc_file)
-
-                if char == '\x00':
-                    break
-
-                file_names[i] += char
+            file_names.append(read_filename(arc_file))
 
         directory = os.path.join(script_directory, os.path.splitext(os.path.basename(arc_file_name))[0])
         if not os.path.exists(directory):
