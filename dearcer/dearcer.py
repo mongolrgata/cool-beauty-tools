@@ -61,7 +61,9 @@ def extract(arc_filename):
         file_lengths = []
         file_names = []
 
-        directory = os.path.dirname(os.path.abspath(arc_filename))
+        directory = os.path.splitext(arc_filename)[0]
+        if not os.path.exists(directory):
+            os.mkdir(directory)
 
         for i in range(0, file_count):
             file_lengths.append(read_unsigned_int32(arc_file))
