@@ -6,10 +6,26 @@ import struct
 
 
 def write_unsigned_int32(file, value):
+    """
+    :param file:
+    :type file: io.FileIO
+    :param value:
+    :type value: int
+    :return:
+    """
+
     return file.write(struct.pack('<L', value))
 
 
 def write_filename(file, filename):
+    """
+    :param file:
+    :type file: io.FileIO
+    :param filename:
+    :type filename: str
+    :return:
+    """
+
     for char in filename:
         file.write(char.encode() + b'\x00')
 
