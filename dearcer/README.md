@@ -1,7 +1,7 @@
 # dearcer
 
-## Usage
+## Использование
 
 ```
-dearcer.py [<file>...]
+dearcer.py (<file>)
 ```

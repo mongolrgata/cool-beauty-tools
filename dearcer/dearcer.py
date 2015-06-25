@@ -3,18 +3,37 @@ __author__ = 'mongolrgata'
 import os
 import sys
 
-script_directory = os.path.dirname(os.path.abspath(__file__))
-
 
 def read_unsigned_int32(file):
+    """
+    :param file:
+    :type file: io.FileIO
+    :return:
+    :rtype: int
+    """
+
     return int.from_bytes(file.read(4), byteorder='little')
 
 
 def read_char16(file):
+    """
+    :param file:
+    :type file: io.FileIO
+    :return:
+    :rtype: str
+    """
+
     return chr(file.read(2)[0])
 
 
 def read_filename(file):
+    """
+    :param file:
+    :type file: io.FileIO
+    :return:
+    :rtype: str
+    """
+
     result = ''
 
     while True:
@@ -28,31 +47,34 @@ def read_filename(file):
     return result
 
 
-def extract(arc_file_name):
-    with open(arc_file_name, 'rb') as arc_file:
+def extract(arc_filename):
+    """
+    :param arc_filename:
+    :type arc_filename: string
+    :return:
+    """
+
+    with open(arc_filename, 'rb') as arc_file:
         file_count = read_unsigned_int32(arc_file)
-        read_unsigned_int32(arc_file)  # header length
+        read_unsigned_int32(arc_file)  # header_length
 
         file_lengths = []
         file_names = []
 
+        directory = os.path.dirname(os.path.abspath(arc_filename))
+
         for i in range(0, file_count):
             file_lengths.append(read_unsigned_int32(arc_file))
-            read_unsigned_int32(arc_file)  # file offset
-            file_names.append(read_filename(arc_file))
-
-        directory = os.path.join(script_directory, os.path.splitext(os.path.basename(arc_file_name))[0])
-        if not os.path.exists(directory):
-            os.mkdir(directory)
+            read_unsigned_int32(arc_file)  # file_offset
+            file_names.append(os.path.join(directory, read_filename(arc_file)))
 
         for i in range(0, file_count):
-            with open(os.path.join(directory, file_names[i]), 'wb+') as file_out:
+            with open(file_names[i], 'wb+') as file_out:
                 file_out.write(arc_file.read(file_lengths[i]))
 
 
 def main():
-    for filename in sys.argv[1:]:
-        extract(filename)
+    extract(sys.argv[1])
 
 
 if __name__ == '__main__':
