@@ -1,7 +1,7 @@
 # parcker
 
-## Usage
+## Использование
 
 ```
-parcker.py (<file>) [<file>...]
+parcker.py (<directory>)
 ```
