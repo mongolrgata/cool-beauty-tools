@@ -15,15 +15,15 @@ def read_unsigned_int32(file):
     return int.from_bytes(file.read(4), byteorder='little')
 
 
-def read_char16(file):
+def read_char8(file):
     """
     :param file:
     :type file: io.FileIO
     :return:
-    :rtype: str
+    :rtype: bytes
     """
 
-    return chr(file.read(2)[0])
+    return file.read(2)[:1]
 
 
 def read_filename(file):
@@ -34,23 +34,23 @@ def read_filename(file):
     :rtype: str
     """
 
-    result = ''
+    result = b''
 
     while True:
-        char = read_char16(file)
+        char = read_char8(file)
 
-        if char == '\x00':
+        if char == b'\x00':
             break
 
         result += char
 
-    return result
+    return result.decode()
 
 
 def extract(arc_filename):
     """
     :param arc_filename:
-    :type arc_filename: string
+    :type arc_filename: str
     :return:
     """
 
