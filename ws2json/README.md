@@ -1,7 +1,7 @@
-# ws2xml
+# ws2json
 
 ## Использование
 
 ```
-ws2xml.py (<file>)
+ws2json.py (<file>)
 ```
