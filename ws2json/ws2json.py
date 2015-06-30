@@ -39,8 +39,12 @@ def convert(file_in, file_out):
     for match in matches:
         result.append({
             'id': hex_decode(match[3]),
-            'line': hex_decode(match[4]),
-            'name': hex_decode(match[2])
+            'name': hex_decode(match[2]),
+            'line': {
+                'en': hex_decode(match[4]),
+                'ru': '',
+                'state': None
+            }
         })
 
     with open(file_out, 'w+') as f:
