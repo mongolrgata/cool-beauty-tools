@@ -2,6 +2,7 @@ __author__ = 'mongolrgata'
 
 import os
 import sys
+import struct
 
 
 def read_unsigned_int32(file):
@@ -15,15 +16,15 @@ def read_unsigned_int32(file):
     return int.from_bytes(file.read(4), byteorder='little')
 
 
-def read_char8(file):
+def read_char16(file):
     """
     :param file:
     :type file: io.FileIO
     :return:
-    :rtype: bytes
+    :rtype: str
     """
 
-    return file.read(2)[:1]
+    return chr(struct.unpack('<H', file.read(2))[0])
 
 
 def read_filename(file):
@@ -34,17 +35,17 @@ def read_filename(file):
     :rtype: str
     """
 
-    result = b''
+    result = ''
 
     while True:
-        char = read_char8(file)
+        char = read_char16(file)
 
-        if char == b'\x00':
+        if char == '\x00':
             break
 
         result += char
 
-    return result.decode()
+    return result
 
 
 def extract(arc_filename):

@@ -12,6 +12,7 @@ def write_unsigned_int32(file, value):
     :param value:
     :type value: int
     :return:
+    :rtype: int
     """
 
     return file.write(struct.pack('<L', value))
@@ -24,12 +25,16 @@ def write_filename(file, filename):
     :param filename:
     :type filename: str
     :return:
+    :rtype: int
     """
 
-    for char in filename:
-        file.write(char.encode() + b'\x00')
+    filename += chr(0)
 
-    return file.write(b'\x00\x00')
+    b = b''
+    for char in filename:
+        b += struct.pack("<H", ord(char))
+
+    return file.write(b)
 
 
 def pack(arc_filename, file_names):

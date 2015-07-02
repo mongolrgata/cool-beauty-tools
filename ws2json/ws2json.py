@@ -1,6 +1,5 @@
 __author__ = 'mongolrgata'
 
-import os
 import sys
 import re
 import binascii
@@ -16,16 +15,16 @@ def hex_decode(original):
     return binascii.hexlify(original).decode()
 
 
-def convert(file_in, file_out):
+def convert(ws2_filename, json_filename):
     """
-    :param file_in:
-    :type file_in: str
-    :param file_out
-    :type file_out: str
+    :param ws2_filename:
+    :type ws2_filename: str
+    :param json_filename
+    :type json_filename: str
     :return:
     """
 
-    with open(file_in, 'rb') as f:
+    with open(ws2_filename, 'rb') as f:
         text = f.read()
 
     matches = re.findall(
@@ -47,15 +46,12 @@ def convert(file_in, file_out):
             }
         })
 
-    with open(file_out, 'w+') as f:
+    with open(json_filename, 'w+') as f:
         f.write(json.dumps(result, sort_keys=True, indent=4))
 
 
 def main():
-    file_in = os.path.abspath(sys.argv[1])
-    file_out = os.path.splitext(file_in)[0] + '.json'
-
-    convert(file_in, file_out)
+    convert(sys.argv[1], sys.argv[1] + '.json')
 
 
 if __name__ == '__main__':
