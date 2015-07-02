@@ -28,7 +28,7 @@ def convert(ws2_filename, json_filename):
         text = f.read()
 
     matches = re.findall(
-        b'(\x54(\x94\x31\x0D(.*?))?\x00\x50(..)\x00\x00\x8D\xA1\x85\xC9\x00(.*?)\x94\x2D\x94\x41\x00)',
+        b'\x54(\x94\x31\x0D(.*?))?\x00\x50(..)\x00\x00\x8D\xA1\x85\xC9\x00(.*?)\x94\x2D\x94\x41\x00',
         text,
         re.DOTALL
     )
@@ -37,13 +37,9 @@ def convert(ws2_filename, json_filename):
 
     for match in matches:
         result.append({
-            'id': hex_decode(match[3]),
-            'name': hex_decode(match[2]),
-            'line': {
-                'en': hex_decode(match[4]),
-                'ru': '',
-                'state': None
-            }
+            'name': hex_decode(match[1]),
+            'id': hex_decode(match[2]),
+            'line': hex_decode(match[3])
         })
 
     with open(json_filename, 'w+') as f:

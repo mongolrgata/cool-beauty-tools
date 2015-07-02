@@ -46,15 +46,6 @@ def pack(arc_filename, file_names):
     :return:
     """
 
-    file_sizes = []
-    content = b''
-
-    for filename in file_names:
-        file_sizes.append(os.path.getsize(filename))
-
-        with open(filename, 'rb') as file_in:
-            content += file_in.read()
-
     with open(arc_filename, 'wb+') as arc_file:
         file_count = len(file_names)
 
@@ -64,15 +55,19 @@ def pack(arc_filename, file_names):
         file_offset = 0
 
         for i in range(0, file_count):
-            write_unsigned_int32(arc_file, file_sizes[i])
+            file_size = os.path.getsize(file_names[i])
+
+            write_unsigned_int32(arc_file, file_size)
             write_unsigned_int32(arc_file, file_offset)
             write_filename(arc_file, os.path.basename(file_names[i]))
 
-            file_offset += file_sizes[i]
+            file_offset += file_size
 
         header_length = arc_file.tell() - 8
 
-        arc_file.write(content)
+        for filename in file_names:
+            with open(filename, 'rb') as file_in:
+                arc_file.write(file_in.read())
 
         arc_file.seek(4)
         write_unsigned_int32(arc_file, header_length)
