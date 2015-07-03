@@ -13,7 +13,7 @@ def read_unsigned_int32(file):
     :rtype: int
     """
 
-    return int.from_bytes(file.read(4), byteorder='little')
+    return struct.unpack('<L', file.read(4))[0]
 
 
 def read_char16(file):
