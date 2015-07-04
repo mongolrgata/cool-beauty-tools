@@ -24,7 +24,7 @@ def extract_png(pna_filename):
     """
 
     with open(pna_filename, 'rb') as pna_file:
-        pna_file.seek(16, 1)
+        pna_file.seek(16, os.SEEK_CUR)
         file_count = read_unsigned_int32(pna_file)
 
         file_names = []
@@ -35,9 +35,9 @@ def extract_png(pna_filename):
             os.mkdir(directory)
 
         for i in range(0, file_count):
-            pna_file.seek(4, 1)
+            pna_file.seek(4, os.SEEK_CUR)
             file_names.append(os.path.join(directory, str(read_unsigned_int32(pna_file)).zfill(3) + '.png'))
-            pna_file.seek(28, 1)
+            pna_file.seek(28, os.SEEK_CUR)
             file_lengths.append(read_unsigned_int32(pna_file))
 
         for i in range(0, file_count):
