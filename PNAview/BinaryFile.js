@@ -3,7 +3,7 @@
  */
 
 /**
- * @param {string} binaryString
+ * @param {string|*} binaryString
  * @constructor
  */
 function BinaryFile(binaryString) {
@@ -12,26 +12,26 @@ function BinaryFile(binaryString) {
 }
 
 /**
- * @param {number} offset
+ * @param {Number} offset
  */
 BinaryFile.prototype.seekCur = function seekCur(offset) {
     this._currentPosition += offset;
 };
 
 /**
- * @param {number} length
+ * @param {Number} size
  * @returns {string}
  */
-BinaryFile.prototype.read = function read(length) {
-    var result = this._data.slice(this._currentPosition, this._currentPosition + length);
+BinaryFile.prototype.read = function read(size) {
+    var result = this._data.slice(this._currentPosition, this._currentPosition + size);
 
-    this._currentPosition += length;
+    this._currentPosition += size;
 
     return result;
 };
 
 /**
- * @returns {number}
+ * @returns {Number}
  */
 BinaryFile.prototype.readUnsignedInt32 = function readUnsignedInt32() {
     var dWord = this.read(4);
