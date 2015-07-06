@@ -3,8 +3,21 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>PNAview</title>
+    <link rel="stylesheet" type="text/css" href="PNAview.css">
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="BinaryFile.js"></script>
+    <script src="PNA.js"></script>
+    <script src="PNAview.js"></script>
 </head>
 <body>
-
+<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; display: flex; flex-direction: column;">
+    <div style="flex-shrink: 0; background-color: gray;">
+        <input id="PNA-file" type="file">
+    </div>
+    <div style="flex-grow: 1; display: flex;">
+        <div id="images" style="flex-grow: 1; overflow: auto;"></div>
+        <div id="layers" style="flex-shrink: 0; overflow-y: scroll; background-color: lightgray;"></div>
+    </div>
+</div>
 </body>
 </html>

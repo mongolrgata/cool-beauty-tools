@@ -1,0 +1,25 @@
+#PNA-file {
+    padding: 4px;
+    font-family: monospace;
+    color: white;
+}
+
+.preview {
+    border: 1px solid black;
+    width: 48px;
+    height: 48px;
+    background: white no-repeat 50% 50%;
+    background-size: contain;
+}
+
+.layer-info {
+    font-family: monospace;
+}
+
+.layer-width {
+    padding-left: 8px;
+}
+
+.layer-height, .offset-left, .offset-top {
+    padding-right: 8px;
+}
