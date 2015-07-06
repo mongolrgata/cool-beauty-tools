@@ -33,21 +33,6 @@ function PNA(binaryFile) {
     }
 
     this.layers.forEach(function (layer) {
-        layer.pngData = binaryFile.read(layer.size);
+        layer.pngDataUrl = 'data:image/png;base64,' + btoa(binaryFile.read(layer.size));
     });
 }
-
-/**
- * @returns {Number}
- */
-PNA.prototype.layersCount = function layersCount() {
-    return this.layers.length;
-};
-
-/**
- * @param {Number} index
- * @returns {string}
- */
-PNA.prototype.getSrcProperty = function getSrcProperty(index) {
-    return 'data:image/png;base64,' + btoa(this.layers[index].pngData);
-};

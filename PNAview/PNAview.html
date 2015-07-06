@@ -10,6 +10,14 @@
     <script src="PNAview.js"></script>
 </head>
 <body>
-<input type="file" id="PNA-file">
+<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; display: flex; flex-direction: column;">
+    <div style="flex-shrink: 0; background-color: gray;">
+        <input id="PNA-file" type="file">
+    </div>
+    <div style="flex-grow: 1; display: flex;">
+        <div id="image" style="flex-grow: 1;"></div>
+        <div id="layers" style="flex-shrink: 0; overflow-y: scroll; background-color: lightgray;"></div>
+    </div>
+</div>
 </body>
 </html>
