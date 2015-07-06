@@ -16,7 +16,7 @@
     font-family: monospace;
 }
 
-.layer-width, .offset-left, .offset-top {
+.layer-width {
     padding-left: 8px;
 }
 
