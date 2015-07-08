@@ -57,7 +57,7 @@ def extract(arc_filename):
 
     with open(arc_filename, 'rb') as arc_file:
         file_count = read_unsigned_int32(arc_file)
-        read_unsigned_int32(arc_file)  # header_length
+        arc_file.seek(4, os.SEEK_CUR)  # header_length
 
         file_lengths = []
         file_names = []
@@ -68,7 +68,7 @@ def extract(arc_filename):
 
         for i in range(0, file_count):
             file_lengths.append(read_unsigned_int32(arc_file))
-            read_unsigned_int32(arc_file)  # file_offset
+            arc_file.seek(4, os.SEEK_CUR)  # file_offset
             file_names.append(os.path.join(directory, read_filename(arc_file)))
 
         for i in range(0, file_count):
