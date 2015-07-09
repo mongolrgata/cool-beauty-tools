@@ -6,13 +6,42 @@ import binascii
 import json
 
 
-def hex_decode(original):
+def rotr8(int8, shift):
     """
-    :param original:
+    :param int8:
+    :type int8: int
+    :param shift:
+    :type shift: int
     :return:
+    :rtype: int
     """
 
-    return binascii.hexlify(original).decode()
+    return (int8 >> shift) | (int8 << (8 - shift) & 0xff)
+
+
+def shift_decode(string):
+    """
+    :param string:
+    :return:
+    :rtype: str
+    """
+
+    result = ''
+
+    for char_code in string:
+        result += chr(rotr8(char_code, 2))
+
+    return result
+
+
+def hex_decode(string):
+    """
+    :param string:
+    :return:
+    :rtype: str
+    """
+
+    return binascii.hexlify(string).decode()
 
 
 def convert(ws2_filename, json_filename):
@@ -27,19 +56,19 @@ def convert(ws2_filename, json_filename):
     with open(ws2_filename, 'rb') as f:
         text = f.read()
 
-    matches = re.findall(
-        b'\x54(\x94\x31\x0D(.*?))?\x00\x50(..)\x00\x00\x8D\xA1\x85\xC9\x00(.*?)\x94\x2D\x94\x41\x00',
-        text,
+    pattern = re.compile(
+        b'\x54(\x94\x31\x0D(?P<name>.*?))?\x00\x50(?P<id>..)'
+        b'\x00\x00\x8D\xA1\x85\xC9\x00(?P<line>.*?)\x94\x2D\x94\x41\x00',
         re.DOTALL
     )
 
     result = []
 
-    for match in matches:
+    for match in pattern.finditer(text):
         result.append({
-            'name': hex_decode(match[1]),
-            'id': hex_decode(match[2]),
-            'line': hex_decode(match[3])
+            'name': shift_decode(match.group('name') or ''),
+            'id': hex_decode(match.group('id')),
+            'line': shift_decode(match.group('line'))
         })
 
     with open(json_filename, 'w+') as f:
