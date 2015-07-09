@@ -37,7 +37,7 @@ BinaryFile.prototype.readUnsignedInt32 = function readUnsignedInt32() {
     var dWord = this.read(4);
     var result = 0;
 
-    for (var i = 0, shift = 0; i < 4; ++i, shift += 8) {
+    for (var i = 0, n = dWord.length, shift = 0; i < n; ++i, shift += 8) {
         result += dWord.charCodeAt(i) << shift;
     }
 
