@@ -68,7 +68,9 @@ def convert(ws2_filename, json_filename):
         result.append({
             'name': shift_decode(match.group('name') or ''),
             'id': hex_decode(match.group('id')),
-            'line': shift_decode(match.group('line'))
+            'line': {
+                'en': shift_decode(match.group('line'))
+            }
         })
 
     with open(json_filename, 'w+') as f:
