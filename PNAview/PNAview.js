@@ -9,10 +9,10 @@ $(document).ready(function () {
         '   <td><div class="preview"></div></td>                  ',
         '   <td align="right"><span class="layer-width"></td>     ',
         '   <td>&#x2715;</td>                                     ',
-        '   <td align="left"><span class="layer-height"></td>     ',
-        '   <td>&#x394;X:</td>                                    ',
+        '   <td align="right"><span class="layer-height"></td>    ',
+        '   <td class="highlight">&#x394;X:</td>                  ',
         '   <td align="right"><span class="offset-left"></td>     ',
-        '   <td>&#x394;Y:</td>                                    ',
+        '   <td class="highlight">&#x394;Y:</td>                  ',
         '   <td align="right"><span class="offset-top"></td>      ',
         '</tr>                                                    '
     ].join('\n'));
@@ -32,11 +32,11 @@ $(document).ready(function () {
                 position: 'relative',
                 width: pnaObject.imageWidth,
                 height: pnaObject.imageHeight,
-                background: '' +
-                'linear-gradient(135deg, transparent 75%, lightgray 0%) 0 0,    ' +
-                'linear-gradient(-45deg, transparent 75%, lightgray 0%) 8px 8px,' +
-                'linear-gradient(135deg, transparent 75%, lightgray 0%) 8px 8px,' +
-                'linear-gradient(-45deg, transparent 75%, lightgray 0%) 0 0     ',
+                background: 'linear-gradient(135deg, lightgray 25%, transparent 25%) 0px 0px,' +
+                            'linear-gradient(-45deg, lightgray 25%, transparent 25%) 8px 8px,' +
+                            'linear-gradient(135deg, lightgray 25%, transparent 25%) 8px 8px,' +
+                            'linear-gradient(-45deg, lightgray 25%, transparent 25%) 0px 0px,' +
+                            'white',
                 backgroundSize: '16px 16px'
             });
 

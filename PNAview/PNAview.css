@@ -23,3 +23,7 @@
 .layer-height, .offset-left, .offset-top {
     padding-right: 8px;
 }
+
+.highlight {
+    color: #06c;
+}
