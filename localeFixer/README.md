@@ -1,0 +1,7 @@
+# localeFixer
+
+## Использование
+
+```
+localeFixer.py
+```
