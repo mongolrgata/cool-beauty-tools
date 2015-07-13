@@ -48,7 +48,21 @@ def read_filename(file):
     return result
 
 
-def extract(arc_filename):
+def prepare_params(arc_filename):
+    """
+    :param arc_filename:
+    :type arc_filename: str
+    :return:
+    :rtype (str, str)
+    """
+
+    return (
+        arc_filename,
+        os.path.splitext(arc_filename)[0]
+    )
+
+
+def extract(arc_filename, directory):
     """
     :param arc_filename:
     :type arc_filename: str
@@ -62,7 +76,6 @@ def extract(arc_filename):
         file_lengths = []
         file_names = []
 
-        directory = os.path.splitext(arc_filename)[0]
         if not os.path.exists(directory):
             os.mkdir(directory)
 
@@ -75,9 +88,12 @@ def extract(arc_filename):
             with open(file_names[i], 'wb+') as file_out:
                 file_out.write(arc_file.read(file_lengths[i]))
 
+    with open(arc_filename + '.order', 'wt+', encoding='utf-8') as order_file:
+        order_file.write('\n'.join([os.path.basename(file_name) for file_name in file_names]))
+
 
 def main():
-    extract(sys.argv[1])
+    extract(*prepare_params(sys.argv[1]))
 
 
 if __name__ == '__main__':
