@@ -53,6 +53,17 @@ def shift_encode(string):
     return bytes(result)
 
 
+def asciify(string):
+    """
+    :param string:
+    :type string: bytes
+    :return:
+    :rtype: bytes
+    """
+
+    return bytes(string[:1]) * len(string)
+
+
 def fix(directory):
     """
     :param directory:
@@ -60,8 +71,17 @@ def fix(directory):
     :return:
     """
 
-    # TODO
-    pass
+    with open(os.path.join(directory, 'Rio.arc'), 'rb') as rio_file:
+        content = rio_file.read()
+
+    for bad_prefix in bad_prefixes:
+        jis_prefix = bad_prefix.encode('shift-jis')
+        fix_prefix = asciify(jis_prefix)
+
+        content = content.replace(shift_encode(jis_prefix), shift_encode(fix_prefix))
+
+    with open(os.path.join(directory, 'Rio.arc'), 'wb') as rio_file:
+        rio_file.write(content)
 
 
 def prepare_params(directory):
