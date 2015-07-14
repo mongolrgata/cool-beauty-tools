@@ -22,16 +22,17 @@ def rotr8(int8, shift):
 def shift_decode(string):
     """
     :param string:
+    :type string: bytes
     :return:
-    :rtype: str
+    :rtype: bytes
     """
 
-    result = ''
+    result = bytearray()
 
     for char_code in string:
-        result += chr(rotr8(char_code, 2))
+        result.append(rotr8(char_code, 2))
 
-    return result
+    return bytes(result)
 
 
 def hex_decode(string):
@@ -66,10 +67,10 @@ def convert(ws2_filename, json_filename):
 
     for match in pattern.finditer(text):
         result.append({
-            'name': shift_decode(match.group('name') or ''),
+            'name': shift_decode(match.group('name') or '').decode(),
             'id': hex_decode(match.group('id')),
             'line': {
-                'en': shift_decode(match.group('line'))
+                'en': shift_decode(match.group('line')).decode()
             }
         })
 
