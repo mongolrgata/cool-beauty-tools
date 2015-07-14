@@ -3,5 +3,5 @@
 ## Использование
 
 ```
-localeFixer.py
+localeFixer.py [<directory>]
 ```
