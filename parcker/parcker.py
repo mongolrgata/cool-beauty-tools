@@ -73,14 +73,31 @@ def pack(arc_filename, file_names):
         write_unsigned_int32(arc_file, header_length)
 
 
-def main():
-    directory = os.path.abspath(sys.argv[1])
+def prepare_params(directory):
+    """
+    :param directory:
+    :type directory: str
+    :return:
+    :rtype (str, list[str])
+    """
+
+    directory = os.path.abspath(directory)
     head, tail = os.path.split(directory)
 
-    pack(
-        os.path.join(head, (tail or 'Archive') + '.arc'),
-        [f for f in [os.path.join(directory, f) for f in os.listdir(directory)] if os.path.isfile(f)]
-    )
+    arc_filename = os.path.join(head, (tail or 'Archive') + '.arc')
+    order_filename = arc_filename + '.order'
+
+    if os.path.isfile(order_filename):
+        with open(order_filename, 'rt', encoding='utf-8') as order_file:
+            file_names = [os.path.join(directory, f) for f in order_file.read().splitlines()]
+    else:
+        file_names = [f for f in [os.path.join(directory, f) for f in os.listdir(directory)] if os.path.isfile(f)]
+
+    return arc_filename, file_names
+
+
+def main():
+    pack(*prepare_params(sys.argv[1]))
 
 
 if __name__ == '__main__':
