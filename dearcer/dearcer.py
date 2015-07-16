@@ -1,8 +1,10 @@
 __author__ = 'mongolrgata'
 
 import os
-import sys
 import struct
+import sys
+
+NUL_CHAR16 = b'\x00\x00'
 
 
 def read_unsigned_int32(file):
@@ -16,17 +18,6 @@ def read_unsigned_int32(file):
     return struct.unpack('<L', file.read(4))[0]
 
 
-def read_char16(file):
-    """
-    :param file:
-    :type file: io.FileIO
-    :return:
-    :rtype: str
-    """
-
-    return chr(struct.unpack('<H', file.read(2))[0])
-
-
 def read_filename(file):
     """
     :param file:
@@ -35,17 +26,17 @@ def read_filename(file):
     :rtype: str
     """
 
-    result = ''
+    result = bytearray()
 
     while True:
-        char = read_char16(file)
+        char = file.read(2)
 
-        if char == '\x00':
+        if char == NUL_CHAR16:
             break
 
-        result += char
+        result.extend(char)
 
-    return result
+    return result.decode('utf-16')
 
 
 def prepare_params(arc_filename):
@@ -85,10 +76,10 @@ def extract(arc_filename, directory):
             file_names.append(os.path.join(directory, read_filename(arc_file)))
 
         for i in range(0, file_count):
-            with open(file_names[i], 'wb+') as file_out:
+            with open(file_names[i], 'wb') as file_out:
                 file_out.write(arc_file.read(file_lengths[i]))
 
-    with open(arc_filename + '.order', 'wt+', encoding='utf-8') as order_file:
+    with open(arc_filename + '.order', 'wt', encoding='utf-8') as order_file:
         order_file.write('\n'.join([os.path.basename(file_name) for file_name in file_names]))
 
 
