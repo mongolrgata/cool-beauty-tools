@@ -4,7 +4,7 @@ import os
 import struct
 import sys
 
-NUL_CHAR16 = b'\x00\x00'
+NUL_CHAR16 = chr(0).encode('utf-16le')
 
 
 def read_unsigned_int32(file):
@@ -36,7 +36,7 @@ def read_filename(file):
 
         result.extend(char)
 
-    return result.decode('utf-16')
+    return result.decode('utf-16le')
 
 
 def prepare_params(arc_filename):

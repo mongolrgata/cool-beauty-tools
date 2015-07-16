@@ -1,8 +1,10 @@
 __author__ = 'mongolrgata'
 
 import os
-import sys
 import struct
+import sys
+
+NUL_CHAR16 = chr(0).encode('utf-16le')
 
 
 def write_unsigned_int32(file, value):
@@ -28,13 +30,7 @@ def write_filename(file, filename):
     :rtype: int
     """
 
-    filename += chr(0)
-
-    b = b''
-    for char in filename:
-        b += struct.pack("<H", ord(char))
-
-    return file.write(b)
+    return file.write(filename.encode('utf-16le') + NUL_CHAR16)
 
 
 def pack(arc_filename, file_names):
@@ -46,7 +42,7 @@ def pack(arc_filename, file_names):
     :return:
     """
 
-    with open(arc_filename, 'wb+') as arc_file:
+    with open(arc_filename, 'wb') as arc_file:
         file_count = len(file_names)
 
         write_unsigned_int32(arc_file, file_count)
