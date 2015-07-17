@@ -1,7 +1,7 @@
 __author__ = 'mongolrgata'
 
-import sys
 import os
+import sys
 
 bad_prefixes = [
     'A小鳥',
@@ -47,12 +47,7 @@ def shift_encode(string):
     :rtype: bytes
     """
 
-    result = bytearray()
-
-    for char_code in string:
-        result.append(rotl8(char_code, 2))
-
-    return bytes(result)
+    return bytes([rotl8(char_code, 2) for char_code in string])
 
 
 def asciify(string):
@@ -73,17 +68,18 @@ def fix(directory):
     :return:
     """
 
-    with open(os.path.join(directory, 'Rio.arc'), 'rb') as rio_file:
+    with open(os.path.join(directory, 'Rio.arc'), 'r+b') as rio_file:
         content = rio_file.read()
 
-    for bad_prefix in bad_prefixes:
-        jis_prefix = bad_prefix.encode('shift-jis')
-        fix_prefix = asciify(jis_prefix)
+        for bad_prefix in bad_prefixes:
+            jis_prefix = bad_prefix.encode('shift-jis')
+            fix_prefix = asciify(jis_prefix)
 
-        content = content.replace(shift_encode(jis_prefix), shift_encode(fix_prefix))
+            content = content.replace(shift_encode(jis_prefix), shift_encode(fix_prefix))
 
-    with open(os.path.join(directory, 'Rio.arc'), 'wb') as rio_file:
+        rio_file.seek(0)
         rio_file.write(content)
+        rio_file.truncate()
 
 
 def prepare_params(directory):
