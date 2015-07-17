@@ -1,9 +1,9 @@
 __author__ = 'mongolrgata'
 
-import sys
-import re
 import binascii
 import json
+import re
+import sys
 
 
 def rotr8(int8, shift):
@@ -27,22 +27,7 @@ def shift_decode(string):
     :rtype: bytes
     """
 
-    result = bytearray()
-
-    for char_code in string:
-        result.append(rotr8(char_code, 2))
-
-    return bytes(result)
-
-
-def hex_decode(string):
-    """
-    :param string:
-    :return:
-    :rtype: str
-    """
-
-    return binascii.hexlify(string).decode()
+    return bytes([rotr8(char_code, 2) for char_code in string])
 
 
 def convert(ws2_filename, json_filename):
@@ -67,15 +52,15 @@ def convert(ws2_filename, json_filename):
 
     for match in pattern.finditer(text):
         result.append({
-            'name': shift_decode(match.group('name') or '').decode(),
-            'id': hex_decode(match.group('id')),
+            'name': shift_decode(match.group('name') or '').decode('shift-jis', 'ignore'),
+            'id': binascii.hexlify(match.group('id')).decode(),
             'line': {
-                'en': shift_decode(match.group('line')).decode()
+                'en': shift_decode(match.group('line')).decode('shift-jis', 'ignore')
             }
         })
 
-    with open(json_filename, 'w+') as f:
-        f.write(json.dumps(result, sort_keys=True, indent=4))
+    with open(json_filename, 'wt', encoding='utf-8') as f:
+        f.write(json.dumps(result, ensure_ascii=False, indent=4, sort_keys=True))
 
 
 def main():
