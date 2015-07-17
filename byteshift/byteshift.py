@@ -24,12 +24,7 @@ def shift_decode(string):
     :rtype: bytes
     """
 
-    result = bytearray()
-
-    for char_code in string:
-        result.append(rotr8(char_code, 2))
-
-    return bytes(result)
+    return bytes([rotr8(char_code, 2) for char_code in string])
 
 
 def rotl8(int8, shift_size):
@@ -53,27 +48,21 @@ def shift_encode(string):
     :rtype: bytes
     """
 
-    result = bytearray()
-
-    for char_code in string:
-        result.append(rotl8(char_code, 2))
-
-    return bytes(result)
+    return bytes([rotl8(char_code, 2) for char_code in string])
 
 
 def shift(direction, filename):
-    with open(filename, 'rb') as ws2_file:
+    with open(filename, 'r+b') as ws2_file:
         content = ws2_file.read()
 
-    if direction == 'right':
-        content = shift_decode(content)
-        filename += '.right'
-    elif direction == 'left':
-        content = shift_encode(content)
-        filename += '.left'
+        if direction == 'right':
+            content = shift_decode(content)
+        elif direction == 'left':
+            content = shift_encode(content)
 
-    with open(filename, 'wb') as ws2_file:
+        ws2_file.seek(0)
         ws2_file.write(content)
+        ws2_file.truncate()
 
 
 def main():
