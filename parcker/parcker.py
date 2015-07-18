@@ -81,7 +81,7 @@ def prepare_params(directory):
     head, tail = os.path.split(directory)
 
     arc_filename = os.path.join(head, (tail or 'Archive') + '.arc')
-    order_filename = arc_filename + '.order'
+    order_filename = os.path.join(directory, 'order')
 
     if os.path.isfile(order_filename):
         with open(order_filename, 'rt', encoding='utf-8') as order_file:
