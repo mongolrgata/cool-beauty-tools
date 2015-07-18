@@ -1,6 +1,6 @@
 # byteshift
 
-## Использование
+## РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ
 
 ```
 byteshift.py right (<file>)
