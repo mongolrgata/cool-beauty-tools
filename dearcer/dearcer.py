@@ -79,8 +79,8 @@ def extract(arc_filename, directory):
             with open(file_names[i], 'wb') as file_out:
                 file_out.write(arc_file.read(file_lengths[i]))
 
-    with open(arc_filename + '.order', 'wt', encoding='utf-8') as order_file:
-        order_file.write('\n'.join([os.path.basename(file_name) for file_name in file_names]))
+    with open(os.path.join(directory, 'order'), 'wt', encoding='utf-8') as order_file:
+        order_file.write('\n'.join([os.path.basename(filename) for filename in file_names]))
 
 
 def main():
