@@ -1,8 +1,8 @@
 __author__ = 'mongolrgata'
 
 import os
-import sys
 import struct
+import sys
 
 
 def read_unsigned_int32(file):
@@ -44,7 +44,7 @@ def extract_png(pna_filename):
             if not file_lengths[i]:
                 continue
 
-            with open(file_names[i], 'wb+') as file_out:
+            with open(file_names[i], 'wb') as file_out:
                 file_out.write(pna_file.read(file_lengths[i]))
 
 
