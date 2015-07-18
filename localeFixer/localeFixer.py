@@ -2,6 +2,10 @@ __author__ = 'mongolrgata'
 
 import os
 import sys
+import tempfile
+
+import dearcer
+import parcker
 
 bad_prefixes = [
     'A小鳥',
@@ -50,17 +54,6 @@ def shift_encode(string):
     return bytes([rotl8(char_code, 2) for char_code in string])
 
 
-def asciify(string):
-    """
-    :param string:
-    :type string: bytes
-    :return:
-    :rtype: bytes
-    """
-
-    return bytes(string[:1]) * len(string)
-
-
 def fix(directory):
     """
     :param directory:
@@ -68,18 +61,49 @@ def fix(directory):
     :return:
     """
 
+    ####################################################################################################################
+    rio_dict = {}
+    graphic_dict = {}
+
+    for bad_prefix in bad_prefixes:
+        jis_prefix = bad_prefix.encode('shift-jis')
+        fix_prefix = bytes(jis_prefix[:1]) * len(jis_prefix)
+
+        rio_dict[shift_encode(jis_prefix)] = shift_encode(fix_prefix)
+        graphic_dict[bad_prefix] = fix_prefix.decode()
+    ####################################################################################################################
     with open(os.path.join(directory, 'Rio.arc'), 'r+b') as rio_file:
         content = rio_file.read()
 
-        for bad_prefix in bad_prefixes:
-            jis_prefix = bad_prefix.encode('shift-jis')
-            fix_prefix = asciify(jis_prefix)
-
-            content = content.replace(shift_encode(jis_prefix), shift_encode(fix_prefix))
+        for bad_prefix, fix_prefix in rio_dict.items():
+            content = content.replace(bad_prefix, fix_prefix)
 
         rio_file.seek(0)
         rio_file.write(content)
         rio_file.truncate()
+    ####################################################################################################################
+    temp_directory = tempfile.mkdtemp()
+
+    dearcer.extract('Graphic.arc', temp_directory)
+
+    with open(os.path.join(temp_directory, 'order'), 'rt', encoding='utf-8') as order_file:
+        file_names = order_file.read().splitlines()
+
+    for i in range(0, len(file_names)):
+        filename = file_names[i]
+
+        for bad_prefix, fix_prefix in graphic_dict.items():
+            if filename.startswith(bad_prefix):
+                fix_filename = os.path.join(temp_directory, fix_prefix + filename[len(bad_prefix):])
+                os.replace(os.path.join(temp_directory, filename), fix_filename)
+                file_names[i] = fix_filename
+
+                break
+        else:
+            file_names[i] = os.path.join(temp_directory, filename)
+
+    parcker.pack('Graphic.arc', file_names)
+    ####################################################################################################################
 
 
 def prepare_params(directory):
