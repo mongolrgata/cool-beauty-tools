@@ -40,24 +40,29 @@ def convert(ws2_filename, json_filename):
     """
 
     with open(ws2_filename, 'rb') as f:
-        text = f.read()
+        content = f.read()
+
+    content = shift_decode(content)
 
     pattern = re.compile(
-        b'\x54(\x94\x31\x0D(?P<name>.*?))?\x00\x50(?P<id>..)'
-        b'\x00\x00\x8D\xA1\x85\xC9\x00(?P<line>.*?)\x94\x2D\x94\x41\x00',
+        b'\x15(\x25\x4c\x43(?P<name>.*?))?\x00\x14(?P<id>..)'
+        b'\x00\x00\x63\x68\x61\x72\x00(?P<line>.*?)\x25\x4b\x25\x50\x00',
         re.DOTALL
     )
 
-    result = []
+    result = {}
 
-    for match in pattern.finditer(text):
-        result.append({
-            'name': shift_decode(match.group('name') or '').decode('shift-jis', 'ignore'),
-            'id': binascii.hexlify(match.group('id')).decode(),
-            'line': {
-                'en': shift_decode(match.group('line')).decode('shift-jis', 'ignore')
-            }
-        })
+    for match in pattern.finditer(content):
+        result[binascii.hexlify(match.group('id')[::-1]).decode()] = {
+            'comments': [],
+            'data': {
+                'en': {
+                    'name': (match.group('name') or b'').decode('shift-jis', 'ignore'),
+                    'line': (match.group('line') or b'').decode('shift-jis', 'ignore')
+                }
+            },
+            'state': 0
+        }
 
     with open(json_filename, 'wt', encoding='utf-8') as f:
         f.write(json.dumps(result, ensure_ascii=False, indent=4, sort_keys=True))
