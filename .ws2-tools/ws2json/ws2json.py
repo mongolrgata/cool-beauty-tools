@@ -30,7 +30,7 @@ def shift_decode(string):
     return bytes([rotr8(char_code, 2) for char_code in string])
 
 
-def convert(ws2_filename, json_filename, language_code):
+def convert(ws2_filename, json_filename, language_code, dummy_mode):
     """
     :param ws2_filename:
     :type ws2_filename: str
@@ -38,11 +38,13 @@ def convert(ws2_filename, json_filename, language_code):
     :type json_filename: str
     :param language_code
     :type language_code: str
+    :param dummy_mode
+    :type dummy_mode: bool
     :return:
     """
 
-    with open(ws2_filename, 'rb') as f:
-        content = f.read()
+    with open(ws2_filename, 'rb') as ws2_file:
+        content = ws2_file.read()
 
     content = shift_decode(content)
 
@@ -64,14 +66,27 @@ def convert(ws2_filename, json_filename, language_code):
                 }
             },
             'state': 0
+        } if not dummy_mode else {
+            'comments': [],
+            'data': {
+                language_code: {
+                    'name': '',
+                    'line': ''
+                }
+            },
+            'state': 0
         }
 
-    with open(json_filename, 'wt', encoding='utf-8') as f:
-        f.write(json.dumps(result, ensure_ascii=False, indent=4, sort_keys=True))
+    with open(json_filename, 'wt', encoding='utf-8') as json_file:
+        json_file.write(json.dumps(result, ensure_ascii=False, indent=4, sort_keys=True))
 
 
 def main():
-    convert(sys.argv[1], sys.argv[1] + '.json', (sys.argv[2:3] + ['en'])[0])
+    convert(
+        sys.argv[1], sys.argv[1] + '.json',
+        (sys.argv[2:3] + ['en'])[0],
+        (sys.argv[3:4] + [None])[0] == 'dummy-mode'
+    )
 
 
 if __name__ == '__main__':
