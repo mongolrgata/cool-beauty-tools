@@ -30,12 +30,14 @@ def shift_decode(string):
     return bytes([rotr8(char_code, 2) for char_code in string])
 
 
-def convert(ws2_filename, json_filename):
+def convert(ws2_filename, json_filename, language_code):
     """
     :param ws2_filename:
     :type ws2_filename: str
     :param json_filename
     :type json_filename: str
+    :param language_code
+    :type language_code: str
     :return:
     """
 
@@ -56,7 +58,7 @@ def convert(ws2_filename, json_filename):
         result[binascii.hexlify(match.group('id')[::-1]).decode()] = {
             'comments': [],
             'data': {
-                'en': {
+                language_code: {
                     'name': (match.group('name') or b'').decode('shift-jis', 'ignore'),
                     'line': (match.group('line') or b'').decode('shift-jis', 'ignore')
                 }
@@ -69,7 +71,7 @@ def convert(ws2_filename, json_filename):
 
 
 def main():
-    convert(sys.argv[1], sys.argv[1] + '.json')
+    convert(sys.argv[1], sys.argv[1] + '.json', (sys.argv[2:3] + ['en'])[0])
 
 
 if __name__ == '__main__':
