@@ -19,56 +19,50 @@ def import_json(json_filename):
     :return:
     """
 
-    new_ws2_filename = os.path.basename(os.path.splitext(json_filename)[0])
+    with open(json_filename, 'rt', encoding='utf-8') as json_file:
+        json_object = json.loads(json_file.read())
 
     temp_directory = tempfile.mkdtemp()
     file_names = dearcer.extract('Rio.arc', temp_directory)
 
-    pattern = re.compile(
-        b'\x15(\x25\x4c\x43(?P<name>.*?))?\x00\x14(?P<id>..)'
-        b'\x00\x00\x63\x68\x61\x72\x00(?P<line>.*?)\x25\x4b\x25\x50\x00',
-        re.DOTALL
-    )
+    ws2_filename = os.path.splitext(os.path.basename(json_filename))[0]
 
-    for i in range(0, len(file_names)):
-        filename = file_names[i]
+    with open(os.path.join(temp_directory, ws2_filename), 'r+b') as ws2_file:
+        content = byteshift.shift_decode(ws2_file.read())
 
-        if filename == new_ws2_filename:
-            with open(os.path.join(temp_directory, filename), 'r+b') as ws2_file:
-                content = byteshift.shift_decode(ws2_file.read())
+        pattern = re.compile(
+            b'\x15(\x25\x4c\x43(?P<name>.*?))?\x00\x14(?P<id>..)'
+            b'\x00\x00\x63\x68\x61\x72\x00(?P<line>.*?)\x25\x4b\x25\x50\x00',
+            re.DOTALL
+        )
 
-                with open(os.path.abspath(json_filename), 'rt', encoding='utf-8') as json_file:
-                    json_object = json.loads(json_file.read())
+        for match in pattern.finditer(content):
+            encode_id = match.group('id')
+            decode_id = binascii.hexlify(encode_id[::-1]).decode()
 
-                for match in pattern.finditer(content):
-                    encode_id = match.group('id')
-                    decode_id = binascii.hexlify(encode_id[::-1]).decode()
+            line = json_object[decode_id]['data']['ru']['line'].encode('1251')
+            name = json_object[decode_id]['data']['ru']['name'].encode('1251')
 
-                    line = json_object[decode_id]['data']['ru']['line'].encode('1251')
-                    name = json_object[decode_id]['data']['ru']['name'].encode('1251')
+            content = content.replace(
+                match.group(),
+                b''.join([
+                    b'\x15',
+                    (b'\x25\x4c\x43' + name if name else b''),
+                    b'\x00\x14',
+                    encode_id,
+                    b'\x00\x00\x63\x68\x61\x72\x00',
+                    line,
+                    b'\x25\x4b\x25\x50\x00'
+                ])
+            )
 
-                    content = content.replace(
-                        match.group(),
-                        b''.join([
-                            b'\x15',
-                            (b'\x25\x4c\x43' + name if name else b''),
-                            b'\x00\x14',
-                            encode_id,
-                            b'\x00\x00\x63\x68\x61\x72\x00',
-                            line,
-                            b'\x25\x4b\x25\x50\x00'
-                        ])
-                    )
+        content = byteshift.shift_encode(content)
 
-                content = byteshift.shift_encode(content)
+        ws2_file.seek(0)
+        ws2_file.write(content)
+        ws2_file.truncate()
 
-                ws2_file.seek(0)
-                ws2_file.write(content)
-                ws2_file.truncate()
-
-        file_names[i] = os.path.join(temp_directory, filename)
-
-    parcker.pack('Rio.arc', file_names)
+    parcker.pack('Rio.arc', [os.path.join(temp_directory, file_name) for file_name in file_names])
 
 
 def main():
