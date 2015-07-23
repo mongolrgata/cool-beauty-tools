@@ -58,6 +58,7 @@ def extract(arc_filename, directory):
     :param arc_filename:
     :type arc_filename: str
     :return:
+    :rtype: list[str]
     """
 
     with open(arc_filename, 'rb') as arc_file:
@@ -73,15 +74,16 @@ def extract(arc_filename, directory):
         for i in range(0, file_count):
             file_lengths.append(read_unsigned_int32(arc_file))
             arc_file.seek(4, os.SEEK_CUR)  # file_offset
-            file_names.append(os.path.join(directory, read_filename(arc_file)))
+            file_names.append(read_filename(arc_file))
 
         for i in range(0, file_count):
-            with open(file_names[i], 'wb') as file_out:
+            with open(os.path.join(directory, file_names[i]), 'wb') as file_out:
                 file_out.write(arc_file.read(file_lengths[i]))
 
     with open(os.path.join(directory, 'order'), 'wt', encoding='utf-8') as order_file:
-        order_file.write('\n'.join([os.path.basename(filename) for filename in file_names]))
+        order_file.write('\n'.join(file_names))
 
+    return file_names
 
 def main():
     extract(*prepare_params(sys.argv[1]))
