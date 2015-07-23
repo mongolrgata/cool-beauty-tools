@@ -84,10 +84,7 @@ def fix(directory):
     ####################################################################################################################
     temp_directory = tempfile.mkdtemp()
 
-    dearcer.extract('Graphic.arc', temp_directory)
-
-    with open(os.path.join(temp_directory, 'order'), 'rt', encoding='utf-8') as order_file:
-        file_names = order_file.read().splitlines()
+    file_names = dearcer.extract('Graphic.arc', temp_directory)
 
     for i in range(0, len(file_names)):
         filename = file_names[i]
