@@ -41,9 +41,11 @@ def import_json(json_filename):
                     json_object = json.loads(json_file.read())
 
                 for match in pattern.finditer(content):
-                    key_id = binascii.hexlify(match.group('id')[::-1]).decode()
-                    line = json_object[key_id]['data']['ru']['line'].encode('1251')
-                    name = json_object[key_id]['data']['ru']['name'].encode('1251')
+                    encode_id = match.group('id')
+                    decode_id = binascii.hexlify(encode_id[::-1]).decode()
+
+                    line = json_object[decode_id]['data']['ru']['line'].encode('1251')
+                    name = json_object[decode_id]['data']['ru']['name'].encode('1251')
 
                     content = content.replace(
                         match.group(),
@@ -51,7 +53,7 @@ def import_json(json_filename):
                             b'\x15',
                             (b'\x25\x4c\x43' + name if name else b''),
                             b'\x00\x14',
-                            match.group('id'),
+                            encode_id,
                             b'\x00\x00\x63\x68\x61\x72\x00',
                             line,
                             b'\x25\x4b\x25\x50\x00'
@@ -59,6 +61,7 @@ def import_json(json_filename):
                     )
 
                 content = byteshift.shift_encode(content)
+
                 ws2_file.seek(0)
                 ws2_file.write(content)
                 ws2_file.truncate()

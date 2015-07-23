@@ -8,7 +8,7 @@
 
 .\archive\file1.ext
 .\archive\file2.ext
-...
+ ...
 .\archive\fileN.ext
 .\archive\order
 ```
