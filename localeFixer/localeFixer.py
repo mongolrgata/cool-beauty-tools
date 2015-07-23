@@ -62,6 +62,9 @@ def fix(directory):
     """
 
     ####################################################################################################################
+    rio_filename = os.path.join(directory, 'Rio.arc')
+    graphic_filename = os.path.join(directory, 'Graphic.arc')
+
     rio_dict = {}
     graphic_dict = {}
 
@@ -72,7 +75,7 @@ def fix(directory):
         rio_dict[shift_encode(jis_prefix)] = shift_encode(fix_prefix)
         graphic_dict[bad_prefix] = fix_prefix.decode()
     ####################################################################################################################
-    with open(os.path.join(directory, 'Rio.arc'), 'r+b') as rio_file:
+    with open(rio_filename, 'r+b') as rio_file:
         content = rio_file.read()
 
         for bad_prefix, fix_prefix in rio_dict.items():
@@ -84,7 +87,7 @@ def fix(directory):
     ####################################################################################################################
     temp_directory = tempfile.mkdtemp()
 
-    file_names = dearcer.extract('Graphic.arc', temp_directory)
+    file_names = dearcer.extract(graphic_filename, temp_directory)
 
     for i in range(0, len(file_names)):
         filename = file_names[i]
@@ -99,7 +102,7 @@ def fix(directory):
         else:
             file_names[i] = os.path.join(temp_directory, filename)
 
-    parcker.pack('Graphic.arc', file_names)
+    parcker.pack(graphic_filename, file_names)
     ####################################################################################################################
 
 
