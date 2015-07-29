@@ -3,8 +3,6 @@ __author__ = 'mongolrgata'
 import re
 import sys
 
-import byteshift
-
 prefix = \
     b'\xA4\xA8\x00\x00\x00\x00\x00\x7C\xA8\x00\x00\x00\x00\x00\xC8\x00' \
     b'\xA1\x04\x5C\xC5\x04\x0C\xFD\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
@@ -79,10 +77,35 @@ suffix = \
     b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
 
-def main():
-    chapter_name = byteshift.shift_encode(sys.argv[1].encode())
+def rotl8(int8, shift_size):
+    """
+    :param int8:
+    :type int8: int
+    :param shift_size:
+    :type shift_size: int
+    :return:
+    :rtype: int
+    """
 
-    with open('Rio.arc', 'r+b') as rio_arc:
+    return (int8 << shift_size) & 0xff | (int8 >> (8 - shift_size))
+
+
+def shift_encode(string):
+    """
+    :param string:
+    :type string: bytes
+    :return:
+    :rtype: bytes
+    """
+
+    return bytes([rotl8(char_code, 2) for char_code in string])
+
+
+def main():
+    rio_filename = sys.argv[1]
+    chapter_name = shift_encode(sys.argv[2].encode())
+
+    with open(rio_filename, 'r+b') as rio_arc:
         content = rio_arc.read()
 
         content = re.sub(
