@@ -32,7 +32,7 @@ def import_json(json_filename):
 
         pattern = re.compile(
             b'\x15(\x25\x4c\x43(?P<name>.*?))?\x00\x14(?P<id>..)'
-            b'\x00\x00\x63\x68\x61\x72\x00(?P<line>.*?)\x25\x4b\x25\x50\x00',
+            b'\x00\x00\x63\x68\x61\x72\x00(?P<line>.*?)\x25\x4b',
             re.DOTALL
         )
 
@@ -52,7 +52,7 @@ def import_json(json_filename):
                     encode_id,
                     b'\x00\x00\x63\x68\x61\x72\x00',
                     line,
-                    b'\x25\x4b\x25\x50\x00'
+                    b'\x25\x4b'
                 ])
             )
 
