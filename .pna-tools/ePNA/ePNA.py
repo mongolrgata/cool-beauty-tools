@@ -49,7 +49,8 @@ def extract_png(pna_filename):
 
 
 def main():
-    extract_png(sys.argv[1])
+    pna_filename = os.path.abspath(sys.argv[1])
+    extract_png(pna_filename)
 
 
 if __name__ == '__main__':
