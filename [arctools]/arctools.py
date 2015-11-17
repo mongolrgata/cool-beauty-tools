@@ -1,9 +1,8 @@
-__author__ = 'mongolrgata'
-
 import os
 import struct
 import sys
 
+__author__ = 'mongolrgata'
 NUL_CHAR = chr(0).encode('utf-16le')
 
 
@@ -108,6 +107,8 @@ def extract(arc_filename, directory):
     """
     :param arc_filename:
     :type arc_filename: str
+    :param directory:
+    :type directory: str
     :return:
     :rtype: list[str]
     """

@@ -1,8 +1,8 @@
-__author__ = 'mongolrgata'
-
 import os
 import struct
 import sys
+
+__author__ = 'mongolrgata'
 
 
 def read_unsigned_int32(file):
@@ -16,7 +16,7 @@ def read_unsigned_int32(file):
     return struct.unpack('<L', file.read(4))[0]
 
 
-def extract_png(pna_filename):
+def extract(pna_filename):
     """
     :param pna_filename:
     :type pna_filename: str
@@ -50,7 +50,7 @@ def extract_png(pna_filename):
 
 def main():
     pna_filename = os.path.abspath(sys.argv[1])
-    extract_png(pna_filename)
+    extract(pna_filename)
 
 
 if __name__ == '__main__':
