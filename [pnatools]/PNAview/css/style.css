@@ -1,0 +1,45 @@
+#menu {
+    padding: 8px;
+    background-color: gray;
+}
+
+#PNA-file {
+    font-family: monospace;
+    color: white;
+}
+
+.background {
+    position: relative;
+    background:
+            linear-gradient(135deg, lightgray 25%, transparent 25%) 0 0,
+            linear-gradient(-45deg, lightgray 25%, transparent 25%) 8px 8px,
+            linear-gradient(135deg, lightgray 25%, transparent 25%) 8px 8px,
+            linear-gradient(-45deg, lightgray 25%, transparent 25%) 0 0,
+            white;
+    background-size: 16px 16px;
+}
+
+.img {
+    position: absolute;
+}
+
+#layers {
+    background-color: lightgray;
+}
+
+.layers-info {
+    border-collapse: collapse;
+    font-family: monospace;
+}
+
+.preview {
+    border: 1px solid black;
+    width: 48px;
+    height: 48px;
+    background: white no-repeat 50% 50%;
+    background-size: contain;
+}
+
+.highlight {
+    color: #06c;
+}

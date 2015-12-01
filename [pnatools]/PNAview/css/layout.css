@@ -31,4 +31,5 @@
 
 .template-with-menu > div:last-child {
     flex-shrink: 0;
+    overflow-y: scroll;
 }
