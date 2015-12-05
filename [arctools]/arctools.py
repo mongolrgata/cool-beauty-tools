@@ -1,9 +1,58 @@
 import os
 import struct
 import sys
+import tempfile
 
 __author__ = 'mongolrgata'
 NUL_CHAR = chr(0).encode('utf-16le')
+
+
+def rotr8(int8, shift_size):
+    """
+    :param int8:
+    :type int8: int
+    :param shift_size:
+    :type shift_size: int
+    :return:
+    :rtype: int
+    """
+
+    return (int8 >> shift_size) | (int8 << (8 - shift_size) & 0xff)
+
+
+def rotl8(int8, shift_size):
+    """
+    :param int8:
+    :type int8: int
+    :param shift_size:
+    :type shift_size: int
+    :return:
+    :rtype: int
+    """
+
+    return (int8 << shift_size) & 0xff | (int8 >> (8 - shift_size))
+
+
+def shift_decode(string):
+    """
+    :param string:
+    :type string: bytes
+    :return:
+    :rtype: bytes
+    """
+
+    return bytes([rotr8(char_code, 2) for char_code in string])
+
+
+def shift_encode(string):
+    """
+    :param string:
+    :type string: bytes
+    :return:
+    :rtype: bytes
+    """
+
+    return bytes([rotl8(char_code, 2) for char_code in string])
 
 
 def read_unsigned_int32(file):
@@ -15,19 +64,6 @@ def read_unsigned_int32(file):
     """
 
     return struct.unpack('<L', file.read(4))[0]
-
-
-def write_unsigned_int32(file, value):
-    """
-    :param file:
-    :type file: io.FileIO
-    :param value:
-    :type value: int
-    :return:
-    :rtype: int
-    """
-
-    return file.write(struct.pack('<L', value))
 
 
 def read_filename(file):
@@ -51,6 +87,19 @@ def read_filename(file):
     return result.decode('utf-16le')
 
 
+def write_unsigned_int32(file, value):
+    """
+    :param file:
+    :type file: io.FileIO
+    :param value:
+    :type value: int
+    :return:
+    :rtype: int
+    """
+
+    return file.write(struct.pack('<L', value))
+
+
 def write_filename(file, filename):
     """
     :param file:
@@ -64,13 +113,13 @@ def write_filename(file, filename):
     return file.write(filename.encode('utf-16le') + NUL_CHAR)
 
 
-def prepare_params_extract(arc_filename):
+def prepare_params_extract():
     """
-    :param arc_filename:
-    :type arc_filename: str
     :return:
     :rtype (str, str)
     """
+
+    arc_filename = os.path.abspath(sys.argv[2])
 
     return (
         arc_filename,
@@ -78,14 +127,13 @@ def prepare_params_extract(arc_filename):
     )
 
 
-def prepare_params_pack(directory):
+def prepare_params_pack():
     """
-    :param directory:
-    :type directory: str
     :return:
     :rtype (str, list[str])
     """
 
+    directory = os.path.abspath(sys.argv[2])
     head, tail = os.path.split(directory)
 
     arc_filename = os.path.join(head, (tail or 'Archive') + '.arc')
@@ -103,6 +151,17 @@ def prepare_params_pack(directory):
     )
 
 
+def prepare_params_fix():
+    """
+    :return:
+    :rtype (str, )
+    """
+
+    return (
+        os.path.abspath(os.getcwd()),
+    )
+
+
 def extract(arc_filename, directory):
     """
     :param arc_filename:
@@ -110,7 +169,6 @@ def extract(arc_filename, directory):
     :param directory:
     :type directory: str
     :return:
-    :rtype: list[str]
     """
 
     with open(arc_filename, 'rb') as arc_file:
@@ -172,13 +230,88 @@ def pack(arc_filename, file_names):
         write_unsigned_int32(arc_file, header_length)
 
 
+def fix(directory):
+    """
+    :param directory:
+    :type directory: str
+    :return:
+    """
+
+    bad_prefixes = [
+        'A小鳥',
+        'Bあげは',
+        'C天音',
+        'D亜紗',
+        'E夜瑠',
+        'Fひばり',
+        'Gほたる',
+        'H朱莉',
+        'I佳奈子',
+        'J達也',
+        'K柾次',
+        'L鯨',
+        'M碧',
+        'Nイスカ',
+        'O早苗',
+        'P亮子',
+        'Q由佳',
+        'Rハット',
+        'S隆夫'
+    ]
+
+    rio_filename = os.path.join(directory, 'Rio.arc')
+    graphic_filename = os.path.join(directory, 'Graphic.arc')
+
+    rio_dict = {}
+    graphic_dict = {}
+
+    for bad_prefix in bad_prefixes:
+        jis_prefix = bad_prefix.encode('shift-jis')
+        fix_prefix = bytes(jis_prefix[:1]) * len(jis_prefix)
+
+        rio_dict[shift_encode(jis_prefix)] = shift_encode(fix_prefix)
+        graphic_dict[bad_prefix] = fix_prefix.decode()
+    ####################################################################################################################
+    with open(rio_filename, 'r+b') as rio_file:
+        content = rio_file.read()
+
+        for bad_prefix, fix_prefix in rio_dict.items():
+            content = content.replace(bad_prefix, fix_prefix)
+
+        rio_file.seek(0)
+        rio_file.write(content)
+        rio_file.truncate()
+    ####################################################################################################################
+    temp_directory = tempfile.mkdtemp()
+    extract(graphic_filename, temp_directory)
+
+    order_filename = os.path.join(temp_directory, 'order')
+    with open(order_filename, 'rt', encoding='utf-8') as order_file:
+        file_names = order_file.read().splitlines()
+
+    for i in range(0, len(file_names)):
+        filename = file_names[i]
+
+        for bad_prefix, fix_prefix in graphic_dict.items():
+            if filename.startswith(bad_prefix):
+                fix_filename = os.path.join(temp_directory, fix_prefix + filename[len(bad_prefix):])
+                os.replace(os.path.join(temp_directory, filename), fix_filename)
+                file_names[i] = fix_filename
+
+                break
+        else:
+            file_names[i] = os.path.join(temp_directory, filename)
+
+    pack(graphic_filename, file_names)
+
+
 def main():
     if sys.argv[1] == 'extract':
-        arc_filename = os.path.abspath(sys.argv[2])
-        extract(*prepare_params_extract(arc_filename))
+        extract(*prepare_params_extract())
     elif sys.argv[1] == 'pack':
-        directory = os.path.abspath(sys.argv[2])
-        pack(*prepare_params_pack(directory))
+        pack(*prepare_params_pack())
+    elif sys.argv[1] == 'fix':
+        fix(*prepare_params_fix())
 
 
 if __name__ == '__main__':

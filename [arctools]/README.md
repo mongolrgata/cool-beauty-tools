@@ -27,3 +27,9 @@
     ```
     arctools.py pack (<directory>)
     ```
+
+-   Исправление файлов **Graphic.arc** и **Rio.arc** в текущей директории
+
+    ```
+    arctools.py fix
+    ```
